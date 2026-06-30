@@ -1,0 +1,290 @@
+{
+  "info": {
+    "_postman_id": "arisa-nutrition-api",
+    "name": "Arisa Nutrition API",
+    "description": "Complete API collection for the Arisa Nutrition dietician backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "blog_id", "value": "", "type": "string" },
+    { "key": "review_id", "value": "", "type": "string" },
+    { "key": "gallery_id", "value": "", "type": "string" },
+    { "key": "contact_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@arisanutrition.com\",\n  \"password\": \"YourSecurePassword123!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "List Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "category", "value": "Nutrition", "disabled": true },
+                { "key": "search", "value": "healthy", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by Slug or ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/blogs/{{blog_id}}", "host": ["{{base_url}}"], "path": ["api", "blogs", "{{blog_id}}"] }
+          }
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"5 Tips for Healthy Eating\",\n  \"excerpt\": \"Discover evidence-based nutrition tips to help you lose weight and feel great.\",\n  \"content\": \"## Introduction\\n\\nEating healthy doesn't have to be complicated. Here are 5 proven tips...\",\n  \"thumbnail\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"category\": \"Nutrition\",\n  \"author\": \"Dr. Arisa\",\n  \"published\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/blogs", "host": ["{{base_url}}"], "path": ["api", "blogs"] }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"published\": false\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/blogs/{{blog_id}}", "host": ["{{base_url}}"], "path": ["api", "blogs", "{{blog_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/blogs/{{blog_id}}", "host": ["{{base_url}}"], "path": ["api", "blogs", "{{blog_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "List Approved Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/reviews", "host": ["{{base_url}}"], "path": ["api", "reviews"] }
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Priya Sharma\",\n  \"review\": \"I lost 10 kg in just 3 months following the diet plan. Highly recommend!\",\n  \"rating\": 5,\n  \"weightLost\": \"10 kg\",\n  \"city\": \"Mumbai\",\n  \"image\": \"\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/reviews", "host": ["{{base_url}}"], "path": ["api", "reviews"] }
+          }
+        },
+        {
+          "name": "Approve Review",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approved\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gallery",
+      "item": [
+        {
+          "name": "List Gallery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/gallery",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gallery"],
+              "query": [{ "key": "type", "value": "before", "disabled": true }]
+            }
+          }
+        },
+        {
+          "name": "Add Gallery Item",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"caption\": \"Client transformation after 3 months\",\n  \"type\": \"after\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/gallery", "host": ["{{base_url}}"], "path": ["api", "gallery"] }
+          }
+        },
+        {
+          "name": "Update Gallery Item",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"caption\": \"Updated caption\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/gallery/{{gallery_id}}", "host": ["{{base_url}}"], "path": ["api", "gallery", "{{gallery_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Gallery Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/gallery/{{gallery_id}}", "host": ["{{base_url}}"], "path": ["api", "gallery", "{{gallery_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Sharma\",\n  \"email\": \"priya@example.com\",\n  \"phone\": \"+91 98765 43210\",\n  \"goal\": \"Lose 15 kg in 6 months\",\n  \"message\": \"I would like to book a consultation with Dr. Arisa to discuss my weight loss goals.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/contact", "host": ["{{base_url}}"], "path": ["api", "contact"] }
+          }
+        },
+        {
+          "name": "List Contact Forms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contact?status=new",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact"],
+              "query": [{ "key": "status", "value": "new" }]
+            }
+          }
+        },
+        {
+          "name": "Update Contact Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/contact/{{contact_id}}", "host": ["{{base_url}}"], "path": ["api", "contact", "{{contact_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Contact Form",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/contact/{{contact_id}}", "host": ["{{base_url}}"], "path": ["api", "contact", "{{contact_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/upload", "host": ["{{base_url}}"], "path": ["api", "upload"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/dashboard", "host": ["{{base_url}}"], "path": ["api", "dashboard"] }
+          }
+        }
+      ]
+    }
+  ]
+}
