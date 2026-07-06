@@ -24,30 +24,48 @@ function isPublic(method: string, pathname: string): boolean {
   );
 }
 
+function getAllowedOrigins(): string[] {
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+  return [frontendUrl, "http://localhost:3000", "http://localhost:3001"];
+}
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return false;
+  return getAllowedOrigins().includes(origin);
+}
+
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   const method = request.method;
+  const origin = request.headers.get("origin");
 
   // Only process API routes
   if (!pathname.startsWith("/api/")) return NextResponse.next();
 
   // Handle CORS preflight requests
   if (method === "OPTIONS") {
-    return new NextResponse(null, {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "Content-Type, Authorization, Cookie",
-      },
-    });
+    if (isOriginAllowed(origin)) {
+      return new NextResponse(null, {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, Cookie",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      });
+    }
+    return new NextResponse(null, { status: 403 });
   }
 
   // Allow public routes through without checking auth
   if (isPublic(method, pathname)) {
     const response = NextResponse.next();
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    if (isOriginAllowed(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin as string);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    }
     return response;
   }
 
@@ -62,14 +80,20 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       },
       { status: 401 }
     );
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    if (isOriginAllowed(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin as string);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    }
     return response;
   }
 
   try {
     await verifyToken(token);
     const response = NextResponse.next();
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    if (isOriginAllowed(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin as string);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    }
     return response;
   } catch (error) {
     console.error("[MIDDLEWARE] Token verification failed for", pathname, error);
@@ -80,7 +104,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       },
       { status: 401 }
     );
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    if (isOriginAllowed(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin as string);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    }
     return response;
   }
 }
