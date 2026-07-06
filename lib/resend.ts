@@ -1,8 +1,15 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
 
-export default resend;
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
+
+export default getResend;
 
 export interface ContactEmailData {
   name: string;
@@ -16,7 +23,7 @@ export interface ContactEmailData {
 export async function sendContactEmail(data: ContactEmailData): Promise<void> {
   const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "Arisa Nutrition <noreply@arisanutrition.com>",
     to: adminEmail,
     replyTo: data.email,
