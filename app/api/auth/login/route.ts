@@ -53,8 +53,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       email: admin.email,
     });
 
-    const isProduction = process.env.NODE_ENV === "production";
-
     const response = successResponse(
       { id: admin._id.toString(), email: admin.email },
       "Login successful"
@@ -62,8 +60,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     response.cookies.set("auth_token", token, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: "/",
     });
