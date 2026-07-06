@@ -36,12 +36,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return new NextResponse(null, {
       status: 200,
       headers: {
-        "Access-Control-Allow-Origin":
-          process.env.NEXT_PUBLIC_APP_URL || "*",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
         "Access-Control-Allow-Headers":
           "Content-Type, Authorization, Cookie",
-        "Access-Control-Allow-Credentials": "true",
       },
     });
   }
@@ -49,11 +47,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Allow public routes through without checking auth
   if (isPublic(method, pathname)) {
     const response = NextResponse.next();
-    response.headers.set(
-      "Access-Control-Allow-Origin",
-      process.env.NEXT_PUBLIC_APP_URL || "*"
-    );
-    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 
@@ -68,22 +62,14 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       },
       { status: 401 }
     );
-    response.headers.set(
-      "Access-Control-Allow-Origin",
-      process.env.NEXT_PUBLIC_APP_URL || "*"
-    );
-    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 
   try {
     await verifyToken(token);
     const response = NextResponse.next();
-    response.headers.set(
-      "Access-Control-Allow-Origin",
-      process.env.NEXT_PUBLIC_APP_URL || "*"
-    );
-    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   } catch (error) {
     console.error("[MIDDLEWARE] Token verification failed for", pathname, error);
@@ -94,11 +80,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       },
       { status: 401 }
     );
-    response.headers.set(
-      "Access-Control-Allow-Origin",
-      process.env.NEXT_PUBLIC_APP_URL || "*"
-    );
-    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 }
