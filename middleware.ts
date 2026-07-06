@@ -31,34 +31,75 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Only process API routes
   if (!pathname.startsWith("/api/")) return NextResponse.next();
 
+  // Handle CORS preflight requests
+  if (method === "OPTIONS") {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin":
+          process.env.NEXT_PUBLIC_APP_URL || "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers":
+          "Content-Type, Authorization, Cookie",
+        "Access-Control-Allow-Credentials": "true",
+      },
+    });
+  }
+
   // Allow public routes through without checking auth
-  if (isPublic(method, pathname)) return NextResponse.next();
+  if (isPublic(method, pathname)) {
+    const response = NextResponse.next();
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      process.env.NEXT_PUBLIC_APP_URL || "*"
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
+  }
 
   const token = request.cookies.get("auth_token")?.value;
 
   if (!token) {
     console.error("[MIDDLEWARE] No token found in cookies for", pathname);
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: false,
         message: "Unauthorized. Please login to continue.",
       },
       { status: 401 }
     );
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      process.env.NEXT_PUBLIC_APP_URL || "*"
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
   }
 
   try {
     await verifyToken(token);
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      process.env.NEXT_PUBLIC_APP_URL || "*"
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
   } catch (error) {
     console.error("[MIDDLEWARE] Token verification failed for", pathname, error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: false,
         message: "Invalid or expired token. Please login again.",
       },
       { status: 401 }
     );
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      process.env.NEXT_PUBLIC_APP_URL || "*"
+    );
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
   }
 }
 
