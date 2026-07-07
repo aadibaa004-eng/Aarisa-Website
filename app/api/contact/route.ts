@@ -12,8 +12,11 @@ import type { PaginationMeta } from "@/types";
 
 // POST /api/contact — Public — submit contact form
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const startTime = Date.now();
   try {
+    console.log("⏱️ [1] Request started");
     await connectDB();
+    console.log(`⏱️ [2] DB connected: ${Date.now() - startTime}ms`);
 
     const body = await request.json();
     const parsed = createContactSchema.safeParse(body);
@@ -22,19 +25,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return validationErrorResponse(parsed.error.errors.map((e) => e.message));
     }
 
+    console.log(`⏱️ [3] Validation done: ${Date.now() - startTime}ms`);
     const contact = await Contact.create(parsed.data);
+    console.log(`⏱️ [4] DB create done: ${Date.now() - startTime}ms`);
 
     // Fire-and-forget email notification – do not block the response
     sendContactEmail(parsed.data).catch((err: unknown) => {
       console.error("[Resend] Failed to send contact notification:", err);
     });
 
+    console.log(`⏱️ [5] Response sent at: ${Date.now() - startTime}ms`);
     return successResponse(
       { id: contact._id.toString() },
       "Thank you! We will get back to you shortly.",
       201
     );
-  } catch {
+  } catch (error) {
+    console.error(`❌ Error after ${Date.now() - startTime}ms:`, error);
     return errorResponse("Failed to submit contact form");
   }
 }

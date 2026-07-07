@@ -38,16 +38,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     await connectDB();
 
     const body = await request.json();
+    console.log("📤 Gallery POST body received:", body);
+
     const parsed = createGallerySchema.safeParse(body);
 
     if (!parsed.success) {
+      console.log("❌ Validation errors:", parsed.error.errors);
       return validationErrorResponse(parsed.error.errors.map((e) => e.message));
     }
 
     const item = await Gallery.create(parsed.data);
 
     return successResponse(item, "Gallery item added successfully", 201);
-  } catch {
-    return errorResponse("Failed to add gallery item");
+  } catch (error) {
+    console.error("Gallery POST error:", error);
+    return errorResponse(
+      `Failed to add gallery item: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
   }
 }

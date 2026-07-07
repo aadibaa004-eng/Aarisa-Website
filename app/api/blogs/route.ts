@@ -9,8 +9,9 @@ import {
 } from "@/utils/response";
 import type { PaginationMeta } from "@/types";
 
-// GET /api/blogs — Public
-// Query params: page, limit, category, search, all (admin only to include drafts)
+// GET /api/blogs — Public (but returns drafts if authenticated)
+// Query params: page, limit, category, search
+// Returns all blogs if admin is logged in, otherwise only published blogs
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     await connectDB();
@@ -24,8 +25,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const category = searchParams.get("category");
     const search = searchParams.get("search");
 
+    // Check if user is authenticated (has auth token)
+    const isAuthenticated = !!request.cookies.get("auth_token")?.value;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: Record<string, any> = { published: true };
+    const query: Record<string, any> = {};
+
+    // Only filter by published if user is not authenticated
+    if (!isAuthenticated) {
+      query.published = true;
+    }
 
     if (category) {
       // Case-insensitive exact match on category

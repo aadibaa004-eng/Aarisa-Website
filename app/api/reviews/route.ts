@@ -8,12 +8,19 @@ import {
   validationErrorResponse,
 } from "@/utils/response";
 
-// GET /api/reviews — Public — returns only approved reviews
-export async function GET(): Promise<NextResponse> {
+// GET /api/reviews — Public (but returns unapproved if authenticated)
+// Returns all reviews if admin is logged in, otherwise only approved reviews
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     await connectDB();
 
-    const reviews = await Review.find({ approved: true }).sort({
+    // Check if user is authenticated (has auth token)
+    const isAuthenticated = !!request.cookies.get("auth_token")?.value;
+
+    // Only filter by approved if user is not authenticated
+    const query = isAuthenticated ? {} : { approved: true };
+
+    const reviews = await Review.find(query).sort({
       createdAt: -1,
     });
 
