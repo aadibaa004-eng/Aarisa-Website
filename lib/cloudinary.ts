@@ -18,16 +18,24 @@ export async function uploadImage(
   file: string,
   folder = "arisa-nutrition"
 ): Promise<{ url: string; publicId: string }> {
-  const result = await cloudinary.uploader.upload(file, {
-    folder,
-    resource_type: "image",
-    transformation: [{ quality: "auto", fetch_format: "auto" }],
-  });
+  try {
+    console.log(`🔧 Cloudinary config - Cloud Name: ${process.env.CLOUDINARY_CLOUD_NAME ? "✓" : "✗"}, API Key: ${process.env.CLOUDINARY_API_KEY ? "✓" : "✗"}`);
+    
+    const result = await cloudinary.uploader.upload(file, {
+      folder,
+      resource_type: "image",
+      transformation: [{ quality: "auto", fetch_format: "auto" }],
+    });
 
-  return {
-    url: result.secure_url,
-    publicId: result.public_id,
-  };
+    console.log(`✅ Cloudinary upload successful: ${result.public_id}`);
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+  } catch (error) {
+    console.error("❌ Cloudinary upload failed:", error);
+    throw error;
+  }
 }
 
 /** Deletes an image from Cloudinary by its public ID. */
