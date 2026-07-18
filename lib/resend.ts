@@ -16,7 +16,7 @@ export interface ContactEmailData {
   email: string;
   phone: string;
   goal: string;
-  message: string;
+  message?: string;
 }
 
 /** Sends an email notification to the admin and a confirmation email to the submitter. */
@@ -43,6 +43,7 @@ export async function sendContactEmail(data: ContactEmailData): Promise<void> {
 
 function buildContactEmailHtml(data: ContactEmailData): string {
   const e = escapeHtml;
+  const message = data.message ?? "No additional message";
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -76,7 +77,7 @@ function buildContactEmailHtml(data: ContactEmailData): string {
           <div class="field"><p class="label">Goal</p><p class="value">${e(data.goal)}</p></div>
           <div class="field">
             <p class="label">Message</p>
-            <div class="msg-box">${e(data.message)}</div>
+            <div class="msg-box">${e(message)}</div>
           </div>
         </div>
         <div class="footer">
