@@ -7,7 +7,7 @@ export interface IContact extends Document {
   email: string;
   phone: string;
   goal: string;
-  message: string;
+  message?: string;
   status: ContactStatus;
   createdAt: Date;
 }
@@ -38,7 +38,7 @@ const ContactSchema = new Schema<IContact>(
     },
     message: {
       type: String,
-      required: [true, "Message is required"],
+      required: false,
       trim: true,
       maxlength: [2000, "Message cannot exceed 2000 characters"],
     },

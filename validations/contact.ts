@@ -20,10 +20,10 @@ export const createContactSchema = z.object({
     .min(5, "Goal must be at least 5 characters")
     .trim(),
   message: z
-    .string({ required_error: "Message is required" })
-    .min(10, "Message must be at least 10 characters")
+    .string()
     .max(2000, "Message cannot exceed 2000 characters")
-    .trim(),
+    .trim()
+    .optional(),
 });
 
 export const updateContactStatusSchema = z.object({
